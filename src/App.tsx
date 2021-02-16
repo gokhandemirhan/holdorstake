@@ -1,5 +1,6 @@
 import logo from "./logo.svg";
 import "./App.css";
+import { useState } from "react";
 
 import { Web3ReactProvider } from "@web3-react/core";
 import { Web3Provider } from "@ethersproject/providers";
@@ -25,33 +26,82 @@ function getLibrary(provider: any): Web3Provider {
 }
 
 export const Wallet = () => {
+  const [externalWallet, setExternalWallet] = useState("");
   const { chainId, account, activate, active } = useWeb3React<Web3Provider>();
 
   const onClick = () => {
     activate(injectedConnector);
   };
 
+  const onChange = (e: any) => {
+    setExternalWallet(e.target.value);
+  };
+
+  const setWallet = () => {};
+
   return (
     <div>
-      <div>ChainId: {chainId}</div>
-      <div>Account: {account}</div>
-      {active ? (
-        <div>✅ </div>
-      ) : (
-        <button type="button" onClick={onClick}>
-          Connect
-        </button>
-      )}
-      {account && <Dashboard wallet={account}/>}
+      <section className="section">
+        <div className="container">
+          {active ? (
+            <div>
+              <h1 className="title">
+                <div>✅ Metamask Connected</div>
+              </h1>
+              <h2 className="subtitle">{account}</h2>
+            </div>
+          ) : (
+            <div>
+              <button
+                className="button is-info"
+                type="button"
+                onClick={onClick}
+              >
+                Connect Metamask
+              </button>
+
+              <div className="field is-grouped mt-4">
+                <p className="control is-expanded">
+                  <input
+                    className="input"
+                    type="text"
+                    placeholder="or enter a wallet address to check"
+                    onChange={(e) => onChange(e)}
+                  />
+                </p>
+                <p className="control">
+                  <button className="button is-info" onClick={setWallet}>
+                    Show me
+                  </button>
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+        <div className="pt-4 is-size-4">
+          Uses Zapper.fi API. Haven't tried it? Go to{" "}
+          <a target="_blank" href="http://zapper.fi/">
+            zapper.fi
+          </a>
+          to try now!
+        </div>
+      </section>
+      <hr />
+
+      <section className="section">
+        {account && <Dashboard wallet={account} />}
+      </section>
     </div>
   );
 };
 
 export const App = () => {
   return (
-    <Web3ReactProvider getLibrary={getLibrary}>
-      <Wallet />
-    </Web3ReactProvider>
+    <div className="container">
+      <Web3ReactProvider getLibrary={getLibrary}>
+        <Wallet />
+      </Web3ReactProvider>
+    </div>
   );
 };
 
