@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { numberFormat } from ".././formatNumber";
+import { numberFormat,currencyFormat } from ".././formatNumber";
 import axios from "axios";
 import LoadingDiv from "./Loading";
 interface Coin {
@@ -130,7 +130,7 @@ export const Dashboard = (props: DashboardProps) => {
                     <div className="tile is-parent">
                       <article className="tile is-child box has-background-primary">
                         <p className="title has-text-white">
-                          {totalCoinAmount}
+                          {numberFormat(totalCoinAmount)}
                         </p>
                         <p className="subtitle has-text-white">{`Exchanged total ${COIN.label} amount`}</p>
                         (gas fee not included)
@@ -139,18 +139,18 @@ export const Dashboard = (props: DashboardProps) => {
                     <div className="tile is-parent">
                       <article className="tile is-child box has-background-info">
                         <p className="title has-text-white">
-                          {numberFormat(totalCoinAmount * coinPriceUSD)}
+                          {currencyFormat(totalCoinAmount * coinPriceUSD)}
                         </p>
                         <p className="subtitle has-text-white">{`Exchanged total USD ${COIN.symbol} value`}</p>
                         {`1 ${COIN.symbol} = `}
-                        {numberFormat(coinPriceUSD)}
+                        {currencyFormat(coinPriceUSD)}
                       </article>
                     </div>
 
                     <div className="tile is-parent">
                       <article className="tile is-child box has-background-warning">
                         <p className="title has-text-white">
-                          {numberFormat(totalStaked)}
+                          {currencyFormat(totalStaked)}
                         </p>
                         <p className="subtitle has-text-white">
                           Staked total USD value
@@ -160,7 +160,7 @@ export const Dashboard = (props: DashboardProps) => {
                     <div className="tile is-parent">
                       <article className="tile is-child box has-background-success">
                         <p className="title has-text-white">
-                          {numberFormat(totalStaked + totalRewardStaked)}
+                          {currencyFormat(totalStaked + totalRewardStaked)}
                         </p>
                         <p className="subtitle has-text-white">
                           Staked total USD value (including rewards)
@@ -180,27 +180,27 @@ export const Dashboard = (props: DashboardProps) => {
               </div>
               <hr />
               <div>
-             
-                <section className="info-tiles">
-                  <div className="tile is-ancestor has-text-centered">
-                    {staking.map((token: any) => {
-                      return (
-                        <div className="tile is-parent" key={token.symbol}>
-                          <article className="tile is-child box">
-                            <p className="title">
-                              {numberFormat(token.balanceUSD)}
-                            </p>
-                            <p className="subtitle">{token.label}</p>
-                            <p>
-                              {token.rewardTokenSymbol} :{" "}
-                              {numberFormat(token.rewardBalanceUSD)}
-                            </p>
-                          </article>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </section>
+                <div className="columns is-multiline is-mobile">
+                  {staking.map((token: any) => {
+                    return (
+                      <div
+                        className="column is-one-quarter tile is-parent has-text-centered"
+                        key={token.symbol}
+                      >
+                        <article className="tile is-child box">
+                          <p className="title">
+                            {currencyFormat(token.balanceUSD)}
+                          </p>
+                          <p className="subtitle">{token.label}</p>
+                          <p>
+                            {token.rewardTokenSymbol} :{" "}
+                            {currencyFormat(token.rewardBalanceUSD)}
+                          </p>
+                        </article>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           ) : (
