@@ -151,7 +151,7 @@ export const Wallet = () => {
 export const App = () => {
   return (
     <div>
-      <a
+      {/* <a
         href="https://github.com/gokhandemirhan/holdorstake"
         className="gh-banner"
         target="new"
@@ -165,7 +165,7 @@ export const App = () => {
           alt="Fork me on GitHub"
           data-recalc-dims="1"
         />
-      </a>
+      </a> */}
 
       <div className="container">
         <Web3ReactProvider getLibrary={getLibrary}>
