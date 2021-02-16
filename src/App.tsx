@@ -8,7 +8,7 @@ import { InjectedConnector } from "@web3-react/injected-connector";
 
 import Dashboard from "./components/Dashboard";
 import ReactGA from 'react-ga';
-ReactGA.initialize("G-E974LF0945");
+ReactGA.initialize("UA-50602512-3");
 ReactGA.pageview(window.location.pathname);
 
 export const injectedConnector = new InjectedConnector({
