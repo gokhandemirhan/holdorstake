@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { numberFormat,currencyFormat } from ".././formatNumber";
+import { numberFormat, currencyFormat } from ".././formatNumber";
 import axios from "axios";
 import LoadingDiv from "./Loading";
 interface Coin {
@@ -53,17 +53,38 @@ export const Dashboard = (props: DashboardProps) => {
     const fetchData = async () => {
       setIsLoading(true);
       setError("");
-      const stakedData = await axios(
+      const singleStaking = await axios(
         `https://api.zapper.fi/v1/staked-balance/single-staking?addresses%5B%5D=${wallet}&api_key=${API_KEY}`
       );
+
+      const masterchefStaking = await axios(
+        `https://api.zapper.fi/v1/staked-balance/masterchef?addresses%5B%5D=${wallet}&api_key=${API_KEY}`
+      );
+
+      const geyserStaking = await axios(
+        `https://api.zapper.fi/v1/staked-balance/geyser?addresses%5B%5D=${wallet}&api_key=${API_KEY}`
+      );
+
+      const gaugeStaking = await axios(
+        `https://api.zapper.fi/v1/staked-balance/gauge?addresses%5B%5D=${wallet}&api_key=${API_KEY}`
+      );
+
+      const stakedData = [].concat(
+        singleStaking.data[wallet],
+        masterchefStaking.data[wallet],
+        geyserStaking.data[wallet],
+        gaugeStaking.data[wallet]
+      );
+
+      setStaking(stakedData);
+      const sums = sumStakings(stakedData);
+      setTotalStaked(sums.total);
+      setTotalRewardStaked(sums.rewardTotal);
+
       const transactionsData = await axios(
         `https://api.zapper.fi/v1/transactions/${wallet}?api_key=${API_KEY}`
       );
 
-      setStaking(stakedData.data[wallet]);
-      const sums = sumStakings(stakedData.data[wallet]);
-      setTotalStaked(sums.total);
-      setTotalRewardStaked(sums.rewardTotal);
       setTotalCoinAmount(sumTotalCoinAmount(transactionsData.data));
       calculateCoinValue();
     };
