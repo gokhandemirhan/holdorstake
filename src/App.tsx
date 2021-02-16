@@ -7,6 +7,8 @@ import { useWeb3React } from "@web3-react/core";
 import { InjectedConnector } from "@web3-react/injected-connector";
 
 import Dashboard from "./components/Dashboard";
+import ReactGA from 'react-ga';
+ReactGA.initialize("G-E974LF0945");
 
 export const injectedConnector = new InjectedConnector({
   supportedChainIds: [
@@ -37,6 +39,10 @@ export const Wallet = () => {
 
   const onClick = () => {
     activate(injectedConnector);
+    ReactGA.event({
+      category: "Query",
+      action: "User connected metamask",
+    });
   };
 
   const onChange = (e: any) => {
@@ -46,6 +52,10 @@ export const Wallet = () => {
   const setWallet = () => {
     setExternalWallet(extWallet)
     extWallet = "";
+    ReactGA.event({
+      category: "Query",
+      action: "User checked for external wallet",
+    });
   };
 
   return (
