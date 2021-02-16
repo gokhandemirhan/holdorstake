@@ -1,6 +1,4 @@
-
-
-.loader2{
+.loader2 {
   margin: 0 0 2em;
   height: 100px;
   width: 100%;
@@ -15,6 +13,23 @@
   Set the color of the icon
 */
 svg path,
-svg rect{
-  fill: #FF6700;
+svg rect {
+  fill: #ff6700;
+}
+
+.gh-banner {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  padding: 22px;
+}
+.wrapper {
+  margin-bottom: 60px;
 }

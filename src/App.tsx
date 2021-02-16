@@ -7,7 +7,7 @@ import { useWeb3React } from "@web3-react/core";
 import { InjectedConnector } from "@web3-react/injected-connector";
 
 import Dashboard from "./components/Dashboard";
-import ReactGA from 'react-ga';
+import ReactGA from "react-ga";
 ReactGA.initialize("UA-50602512-3");
 ReactGA.pageview(window.location.pathname);
 
@@ -47,11 +47,11 @@ export const Wallet = () => {
   };
 
   const onChange = (e: any) => {
-    extWallet+=e.target.value;
+    extWallet += e.target.value;
   };
 
   const setWallet = () => {
-    setExternalWallet(extWallet)
+    setExternalWallet(extWallet);
     extWallet = "";
     ReactGA.event({
       category: "Query",
@@ -62,6 +62,7 @@ export const Wallet = () => {
   return (
     <div>
       <section className="section">
+        <h1 className="title is-1">Should I Stake or Should I Hodl?</h1>
         <div className="container">
           {active ? (
             <div>
@@ -116,30 +117,61 @@ export const Wallet = () => {
           to try now!
         </div>
         <div className="pt-4 is-size-6 content">
-         How it works: 
-         <ol>
-           <li>Checks your transactions history and sums all the ETH you spend on exchanging (ex: exchanging ETH for USDC) and its todays USD value</li>
-           <li>Sums all your staked coins' USD values</li>
-           <li>Compares these two values to see if you would be better of by hodling or staking.</li>
+          How it works:
+          <ol>
+            <li>
+              Checks your transactions history and sums all the ETH you spend on
+              exchanging (ex: exchanging ETH for USDC) and its todays USD value
+            </li>
+            <li>Sums all your staked coins' USD values</li>
+            <li>
+              Compares these two values to see if you would be better of by
+              hodling or staking.
+            </li>
           </ol>
         </div>
       </section>
       <hr />
 
-      <section className="section">
+      <section className="section wrapper">
         {account && <Dashboard wallet={account} />}
         {externalWallet && <Dashboard wallet={externalWallet} />}
       </section>
+      <footer className="footer">
+        <div className="content has-text-centered">
+          <p>
+            Disclamer: Not an investment advice, do you own research. Not responsible for anything that may happen to you/your investments.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };
 
 export const App = () => {
   return (
-    <div className="container">
-      <Web3ReactProvider getLibrary={getLibrary}>
-        <Wallet />
-      </Web3ReactProvider>
+    <div>
+      <a
+        href="https://github.com/gokhandemirhan/holdorstake"
+        className="gh-banner"
+        target="new"
+      >
+        <img
+          loading="lazy"
+          width="149"
+          height="149"
+          src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png?resize=149%2C149"
+          className="attachment-full size-full"
+          alt="Fork me on GitHub"
+          data-recalc-dims="1"
+        />
+      </a>
+
+      <div className="container">
+        <Web3ReactProvider getLibrary={getLibrary}>
+          <Wallet />
+        </Web3ReactProvider>
+      </div>
     </div>
   );
 };
