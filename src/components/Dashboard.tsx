@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { numberFormat } from ".././formatNumber";
 import axios from "axios";
-
+import LoadingDiv from "./Loading";
 interface Coin {
   label: string;
   symbol: string;
@@ -34,7 +34,6 @@ interface DashboardProps {
   wallet: string;
 }
 
-const API_KEY = "5d1237c2-3840-4733-8e92-c5a58fe81b88";
 const COIN: Coin = { label: "ethereum", symbol: "ETH" };
 
 export const Dashboard = (props: DashboardProps) => {
@@ -42,14 +41,18 @@ export const Dashboard = (props: DashboardProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [staking, setStaking] = useState([]);
   const [totalStaked, setTotalStaked] = useState(0);
+  const [totalRewardStaked, setTotalRewardStaked] = useState(0);
   // const [transactions, setTransactions] = useState([]);
   const [totalCoinAmount, setTotalCoinAmount] = useState(0);
   const [coinPriceUSD, setCoinPriceUSD] = useState(1);
+  const [error, setError] = useState("");
   let isBetterOff = false;
+  const API_KEY = process.env.REACT_APP_API_KEY;
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
+      setError("");
       const stakedData = await axios(
         `https://api.zapper.fi/v1/staked-balance/single-staking?addresses%5B%5D=${wallet}&api_key=${API_KEY}`
       );
@@ -58,18 +61,27 @@ export const Dashboard = (props: DashboardProps) => {
       );
 
       setStaking(stakedData.data[wallet]);
-      setTotalStaked(sumStakings(stakedData.data[wallet]));
+      const sums = sumStakings(stakedData.data[wallet]);
+      setTotalStaked(sums.total);
+      setTotalRewardStaked(sums.rewardTotal);
       setTotalCoinAmount(sumTotalCoinAmount(transactionsData.data));
       calculateCoinValue();
     };
 
-    fetchData();
-  }, [wallet]);
+    fetchData().catch((error) => {
+      setIsLoading(false);
+      setError(error.message);
+    });
+  }, [wallet, API_KEY]);
 
   function sumStakings(response: any) {
     let t = 0;
-    response.forEach((el: any) => (t += el.balanceUSD));
-    return t;
+    let rT = 0;
+    response.forEach((el: any) => {
+      t += el.balanceUSD;
+      rT += el.rewardBalanceUSD;
+    });
+    return { total: t, rewardTotal: rT };
   }
 
   function sumTotalCoinAmount(response: any) {
@@ -94,88 +106,106 @@ export const Dashboard = (props: DashboardProps) => {
       .then((resp: { data: CoinGecko }) => {
         setCoinPriceUSD(resp.data[COIN.label]["usd"]);
         setIsLoading(false);
+        setError("");
       });
   }
 
-  isBetterOff = totalStaked > totalCoinAmount * coinPriceUSD;
+  isBetterOff =
+    totalStaked + totalRewardStaked > totalCoinAmount * coinPriceUSD;
 
   return (
     <div>
-      {isLoading ? (
-        <svg className="loader" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
-        <rect x="19" y="19" width="20" height="20" fill="#1d3f72">
-          <animate attributeName="fill" values="#5699d2;#1d3f72;#1d3f72" keyTimes="0;0.125;1" dur="1s" repeatCount="indefinite" begin="0s" calcMode="discrete"></animate>
-        </rect><rect x="40" y="19" width="20" height="20" fill="#1d3f72">
-          <animate attributeName="fill" values="#5699d2;#1d3f72;#1d3f72" keyTimes="0;0.125;1" dur="1s" repeatCount="indefinite" begin="0.125s" calcMode="discrete"></animate>
-        </rect><rect x="61" y="19" width="20" height="20" fill="#1d3f72">
-          <animate attributeName="fill" values="#5699d2;#1d3f72;#1d3f72" keyTimes="0;0.125;1" dur="1s" repeatCount="indefinite" begin="0.25s" calcMode="discrete"></animate>
-        </rect><rect x="19" y="40" width="20" height="20" fill="#1d3f72">
-          <animate attributeName="fill" values="#5699d2;#1d3f72;#1d3f72" keyTimes="0;0.125;1" dur="1s" repeatCount="indefinite" begin="0.875s" calcMode="discrete"></animate>
-        </rect><rect x="61" y="40" width="20" height="20" fill="#1d3f72">
-          <animate attributeName="fill" values="#5699d2;#1d3f72;#1d3f72" keyTimes="0;0.125;1" dur="1s" repeatCount="indefinite" begin="0.375s" calcMode="discrete"></animate>
-        </rect><rect x="19" y="61" width="20" height="20" fill="#1d3f72">
-          <animate attributeName="fill" values="#5699d2;#1d3f72;#1d3f72" keyTimes="0;0.125;1" dur="1s" repeatCount="indefinite" begin="0.75s" calcMode="discrete"></animate>
-        </rect><rect x="40" y="61" width="20" height="20" fill="#1d3f72">
-          <animate attributeName="fill" values="#5699d2;#1d3f72;#1d3f72" keyTimes="0;0.125;1" dur="1s" repeatCount="indefinite" begin="0.625s" calcMode="discrete"></animate>
-        </rect><rect x="61" y="61" width="20" height="20" fill="#1d3f72">
-          <animate attributeName="fill" values="#5699d2;#1d3f72;#1d3f72" keyTimes="0;0.125;1" dur="1s" repeatCount="indefinite" begin="0.5s" calcMode="discrete"></animate>
-        </rect>
-        </svg>
+      {error ? (
+        <div className="is-error has-text-danger is-size-3">{error}</div>
       ) : (
         <div>
-          <div>
-            <section className="info-tiles">
-              <div className="tile is-ancestor has-text-centered">
-                <div className="tile is-parent">
-                  <article className="tile is-child box has-background-primary">
-                    <p className="title has-text-white">{totalCoinAmount}</p>
-                    <p className="subtitle has-text-white">{`Exchanged total ${COIN.label} amount`}</p>
-                  </article>
-                </div>
-                <div className="tile is-parent">
-                  <article className="tile is-child box has-background-info">
-                    <p className="title has-text-white">
-                      {numberFormat(totalCoinAmount * coinPriceUSD)}
-                    </p>
-                    <p className="subtitle has-text-white">{`Exchanged total USD ${COIN.symbol} value`}</p>
-                  </article>
-                </div>
-
-                <div className="tile is-parent">
-                  <article className="tile is-child box has-background-warning">
-                    <p className="title has-text-white">{numberFormat(totalStaked)}</p>
-                    <p className="subtitle has-text-white">Staked total USD value</p>
-                  </article>
-                </div>
-              </div>
-            </section>
-          </div>
-          <hr />
-          <div>
-            <p className="is-size-3 has-text-centered">{isBetterOff ? "Congrats! You better off by staking":"Damn! You should have hodled :("}</p>
-          </div>
-          <hr />
-          <div>
-          <div>
-            <p className="is-size-4">Your staked coins:</p>
-          </div>
-            <section className="info-tiles">
-              <div className="tile is-ancestor has-text-centered">
-                {staking.map((token: any) => {
-                  return (
-                    <div className="tile is-parent" key={token.symbol}>
-                      <article className="tile is-child box">
-                        <p className="title">
-                          {numberFormat(token.balanceUSD)}
+          {!isLoading ? (
+            <div>
+              <p className="is-size-6">
+                {"Date: "} {new Date().toLocaleString()}{" "}
+              </p>
+              <div>
+                <section className="info-tiles">
+                  <div className="tile is-ancestor has-text-centered">
+                    <div className="tile is-parent">
+                      <article className="tile is-child box has-background-primary">
+                        <p className="title has-text-white">
+                          {totalCoinAmount}
                         </p>
-                        <p className="subtitle">{token.label}</p>
+                        <p className="subtitle has-text-white">{`Exchanged total ${COIN.label} amount`}</p>
+                        (gas fee not included)
                       </article>
                     </div>
-                  );
-                })}
+                    <div className="tile is-parent">
+                      <article className="tile is-child box has-background-info">
+                        <p className="title has-text-white">
+                          {numberFormat(totalCoinAmount * coinPriceUSD)}
+                        </p>
+                        <p className="subtitle has-text-white">{`Exchanged total USD ${COIN.symbol} value`}</p>
+                        {`1 ${COIN.symbol} = `}
+                        {numberFormat(coinPriceUSD)}
+                      </article>
+                    </div>
+
+                    <div className="tile is-parent">
+                      <article className="tile is-child box has-background-warning">
+                        <p className="title has-text-white">
+                          {numberFormat(totalStaked)}
+                        </p>
+                        <p className="subtitle has-text-white">
+                          Staked total USD value
+                        </p>
+                      </article>
+                    </div>
+                    <div className="tile is-parent">
+                      <article className="tile is-child box has-background-success">
+                        <p className="title has-text-white">
+                          {numberFormat(totalStaked + totalRewardStaked)}
+                        </p>
+                        <p className="subtitle has-text-white">
+                          Staked total USD value (including rewards)
+                        </p>
+                      </article>
+                    </div>
+                  </div>
+                </section>
               </div>
-            </section>
-          </div>
+              <hr />
+              <div>
+                <p className="is-size-3 has-text-centered">
+                  {isBetterOff
+                    ? "Congrats! You better off by staking"
+                    : "Damn! You should have hodled :("}
+                </p>
+              </div>
+              <hr />
+              <div>
+             
+                <section className="info-tiles">
+                  <div className="tile is-ancestor has-text-centered">
+                    {staking.map((token: any) => {
+                      return (
+                        <div className="tile is-parent" key={token.symbol}>
+                          <article className="tile is-child box">
+                            <p className="title">
+                              {numberFormat(token.balanceUSD)}
+                            </p>
+                            <p className="subtitle">{token.label}</p>
+                            <p>
+                              {token.rewardTokenSymbol} :{" "}
+                              {numberFormat(token.rewardBalanceUSD)}
+                            </p>
+                          </article>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </section>
+              </div>
+            </div>
+          ) : (
+            <LoadingDiv />
+          )}
         </div>
       )}
     </div>

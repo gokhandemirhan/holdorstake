@@ -1,5 +1,5 @@
 import "./App.css";
-// import { useState } from "react";
+import { useState } from "react";
 
 import { Web3ReactProvider } from "@web3-react/core";
 import { Web3Provider } from "@ethersproject/providers";
@@ -25,7 +25,8 @@ function getLibrary(provider: any): Web3Provider {
 }
 
 export const Wallet = () => {
-  // const [externalWallet, setExternalWallet] = useState("");
+  const [externalWallet, setExternalWallet] = useState("");
+  let extWallet = "";
   const {
     chainId,
     account,
@@ -38,11 +39,14 @@ export const Wallet = () => {
     activate(injectedConnector);
   };
 
-  // const onChange = (e: any) => {
-  //   setExternalWallet(e.target.value);
-  // };
+  const onChange = (e: any) => {
+    extWallet+=e.target.value;
+  };
 
-  // const setWallet = () => {};
+  const setWallet = () => {
+    setExternalWallet(extWallet)
+    extWallet = "";
+  };
 
   return (
     <div>
@@ -75,7 +79,7 @@ export const Wallet = () => {
                 Connect Metamask
               </button>
 
-              {/* <div className="field is-grouped mt-4">
+              <div className="field is-grouped mt-4">
                 <p className="control is-expanded">
                   <input
                     className="input"
@@ -89,22 +93,31 @@ export const Wallet = () => {
                     Show me
                   </button>
                 </p>
-              </div> */}
+              </div>
             </div>
           )}
         </div>
-        <div className="pt-4 is-size-4">
+        <div className="pt-4 is-size-5">
           Uses Zapper.fi API. Haven't tried it? Go to{" "}
           <a target="new" href="http://zapper.fi/">
             zapper.fi
           </a>{" "}
           to try now!
         </div>
+        <div className="pt-4 is-size-6 content">
+         How it works: 
+         <ol>
+           <li>Checks your transactions history and sums all the ETH you spend on exchanging (ex: exchanging ETH for USDC) and its todays USD value</li>
+           <li>Sums all your staked coins' USD values</li>
+           <li>Compares these two values to see if you would be better of by hodling or staking.</li>
+          </ol>
+        </div>
       </section>
       <hr />
 
       <section className="section">
         {account && <Dashboard wallet={account} />}
+        {externalWallet && <Dashboard wallet={externalWallet} />}
       </section>
     </div>
   );
