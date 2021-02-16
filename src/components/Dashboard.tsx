@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import data from "../mock";
 import { numberFormat } from ".././formatNumber";
 import axios from "axios";
 
@@ -43,7 +42,7 @@ export const Dashboard = (props: DashboardProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [staking, setStaking] = useState([]);
   const [totalStaked, setTotalStaked] = useState(0);
-  const [transactions, setTransactions] = useState([]);
+  // const [transactions, setTransactions] = useState([]);
   const [totalCoinAmount, setTotalCoinAmount] = useState(0);
   const [coinPriceUSD, setCoinPriceUSD] = useState(1);
   let isBetterOff = false;
@@ -65,19 +64,19 @@ export const Dashboard = (props: DashboardProps) => {
     };
 
     fetchData();
-  }, []);
+  }, [wallet]);
 
   function sumStakings(response: any) {
     let t = 0;
-    const total = response.forEach((el: any) => (t += el.balanceUSD));
+    response.forEach((el: any) => (t += el.balanceUSD));
     return t;
   }
 
   function sumTotalCoinAmount(response: any) {
     let t = 0;
-    response.map((trx: Transaction) => {
+    response.forEach((trx: Transaction) => {
       if (trx.name === "Exchange") {
-        trx.subTransactions.map((subTrx) => {
+        trx.subTransactions.forEach((subTrx) => {
           if (subTrx.type === "outgoing" && subTrx.symbol === COIN.symbol) {
             t += subTrx.amount;
           }
