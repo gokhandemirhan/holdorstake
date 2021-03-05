@@ -110,7 +110,7 @@ export const Wallet = () => {
           )}
         </div>
         <div className="pt-4 is-size-5">
-          Uses Zapper.fi API. Haven't tried it? Go to{" "}
+          Uses Zapper.fi API. Haven't tried it yet? Go to{" "}
           <a target="new" href="http://zapper.fi/">
             zapper.fi
           </a>{" "}
@@ -151,7 +151,7 @@ export const Wallet = () => {
 export const App = () => {
   return (
     <div>
-      {/* <a
+      <a
         href="https://github.com/gokhandemirhan/holdorstake"
         className="gh-banner"
         target="new"
@@ -165,7 +165,7 @@ export const App = () => {
           alt="Fork me on GitHub"
           data-recalc-dims="1"
         />
-      </a> */}
+      </a>
 
       <div className="container">
         <Web3ReactProvider getLibrary={getLibrary}>

@@ -48,25 +48,26 @@ export const Dashboard = (props: DashboardProps) => {
   const [error, setError] = useState("");
   let isBetterOff = false;
   const API_KEY = process.env.REACT_APP_API_KEY;
+  const API_BASE = "https://api.zapper.fi/v1";
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       setError("");
       const singleStaking = await axios(
-        `https://api.zapper.fi/v1/staked-balance/single-staking?addresses%5B%5D=${wallet}&api_key=${API_KEY}`
+        `${API_BASE}/staked-balance/single-staking?addresses%5B%5D=${wallet}&api_key=${API_KEY}`
       );
 
       const masterchefStaking = await axios(
-        `https://api.zapper.fi/v1/staked-balance/masterchef?addresses%5B%5D=${wallet}&api_key=${API_KEY}`
+        `${API_BASE}/staked-balance/masterchef?addresses%5B%5D=${wallet}&api_key=${API_KEY}`
       );
 
       const geyserStaking = await axios(
-        `https://api.zapper.fi/v1/staked-balance/geyser?addresses%5B%5D=${wallet}&api_key=${API_KEY}`
+        `${API_BASE}/staked-balance/geyser?addresses%5B%5D=${wallet}&api_key=${API_KEY}`
       );
 
       const gaugeStaking = await axios(
-        `https://api.zapper.fi/v1/staked-balance/gauge?addresses%5B%5D=${wallet}&api_key=${API_KEY}`
+        `${API_BASE}/staked-balance/gauge?addresses%5B%5D=${wallet}&api_key=${API_KEY}`
       );
 
       const stakedData = [].concat(
@@ -82,7 +83,7 @@ export const Dashboard = (props: DashboardProps) => {
       setTotalRewardStaked(sums.rewardTotal);
 
       const transactionsData = await axios(
-        `https://api.zapper.fi/v1/transactions/${wallet}?api_key=${API_KEY}`
+        `${API_BASE}/transactions/${wallet}?api_key=${API_KEY}`
       );
 
       setTotalCoinAmount(sumTotalCoinAmount(transactionsData.data));
